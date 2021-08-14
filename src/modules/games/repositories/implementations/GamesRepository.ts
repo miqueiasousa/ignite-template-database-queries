@@ -1,4 +1,4 @@
-import { getConnection, getRepository, Repository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 
 import { User } from "../../../users/entities/User";
 import { Game } from "../../entities/Game";
@@ -25,12 +25,11 @@ export class GamesRepository implements IGamesRepository {
   }
 
   async findUsersByGameId(id: string): Promise<User[]> {
-    return getConnection()
-      .getRepository(User)
-      .createQueryBuilder("users")
-      .leftJoin("users.games", "games")
-      .where(`games.id = '${id}'`)
-      .getMany();
+    return this.repository
+      .createQueryBuilder()
+      .relation(Game, "users")
+      .of(id)
+      .loadMany();
     // Complete usando query builder
   }
 }
